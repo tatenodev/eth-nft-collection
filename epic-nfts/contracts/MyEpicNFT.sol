@@ -6,6 +6,8 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "hardhat/console.sol";
 
+import { Base64 } from "./lib/Base64.sol";
+
 contract MyEpicNFT is ERC721URIStorage {
   // OpenZeppelin が tokenIds を簡単に追跡するために提供するライブラリを呼び出し
   // トラッキングの際に起こりうるオーバーフローを防ぐ
@@ -64,11 +66,40 @@ contract MyEpicNFT is ERC721URIStorage {
     string memory second = pickRandomSecondWord(newItemId);
     string memory third = pickRandomThirdWord(newItemId);
 
+    // 3つの単語連結
+    string memory combinedWord = string(abi.encodePacked(first, second, third));
+
     // 3つの単語を連結してtextタグとsvgタグで閉じる
     string memory finalSvg = string(abi.encodePacked(baseSvg, first, second, third, "</text></svg>"));
 
     console.log("\n--------------------");
     console.log(finalSvg);
+    console.log("--------------------\n");
+
+    // JSONファイルを所定の位置に取得し、base64としてエンコード
+    string memory json = Base64.encode(
+      bytes(
+        string(
+          abi.encodePacked(
+            '{"name": "',
+            // NFTタイトルを生成される言葉に設定
+            combinedWord,
+            '", "description": "A highly acclaimed collection of squares.", "image": "data:image/svg+xml;base64,',
+            //  data:image/svg+xml;base64 を追加し、SVG を base64 でエンコードした結果を追加
+            Base64.encode(bytes(finalSvg)),
+            '"}'
+          )
+        )
+      )
+    );
+
+    // データの先頭に data:application/json;base64 を追加
+    string memory finalTokenUri = string(
+        abi.encodePacked("data:application/json;base64,", json)
+    );
+
+    console.log("\n----- Token URI ----");
+    console.log(finalTokenUri);
     console.log("--------------------\n");
 
     // msg.sender を使って NFT を送信者に Mint する
@@ -82,8 +113,8 @@ contract MyEpicNFT is ERC721URIStorage {
     //   newItemId,
     //   "data:application/json;base64,ewogICJuYW1lIjogIkVwaWNOZnRDcmVhdG9yIiwKICAiZGVzY3JpcHRpb24iOiAiVGhlIGhpZ2hseSBhY2NsYWltZWQgc3F1YXJlIGNvbGxlY3Rpb24iLAogICJpbWFnZSI6ICJkYXRhOmltYWdlL3N2Zyt4bWw7YmFzZTY0LFBITjJaeUI0Yld4dWN6MGlhSFIwY0RvdkwzZDNkeTUzTXk1dmNtY3ZNakF3TUM5emRtY2lJSEJ5WlhObGNuWmxRWE53WldOMFVtRjBhVzg5SW5oTmFXNVpUV2x1SUcxbFpYUWlJSFpwWlhkQ2IzZzlJakFnTUNBek5UQWdNelV3SWo0S0lDQWdJRHh6ZEhsc1pUNHVZbUZ6WlNCN0lHWnBiR3c2SUhkb2FYUmxPeUJtYjI1MExXWmhiV2xzZVRvZ2MyVnlhV1k3SUdadmJuUXRjMmw2WlRvZ01UUndlRHNnZlR3dmMzUjViR1UrQ2lBZ0lDQThjbVZqZENCM2FXUjBhRDBpTVRBd0pTSWdhR1ZwWjJoMFBTSXhNREFsSWlCbWFXeHNQU0ppYkdGamF5SWdMejRLSUNBZ0lEeDBaWGgwSUhnOUlqVXdKU0lnZVQwaU5UQWxJaUJqYkdGemN6MGlZbUZ6WlNJZ1pHOXRhVzVoYm5RdFltRnpaV3hwYm1VOUltMXBaR1JzWlNJZ2RHVjRkQzFoYm1Ob2IzSTlJbTFwWkdSc1pTSStSWEJwWTA1bWRFTnlaV0YwYjNJOEwzUmxlSFErQ2p3dmMzWm5QZz09Igp9"
     // );
-    // TODO: あとで設定
-    _setTokenURI(newItemId, "We will set tokenURI later.");
+    // on chain
+    _setTokenURI(newItemId, finalTokenUri);
 
     // NFT がいつ誰に作成されたかを確認
     console.log("An NFT w/ ID %s has been minted to %s", newItemId, msg.sender);
