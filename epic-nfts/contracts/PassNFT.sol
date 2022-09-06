@@ -21,7 +21,6 @@ contract PassNFT is ERC721URIStorage {
 
   function createPassIdSVG() internal view returns(string memory) {
     string memory startTag = "<text style='white-space: pre; fill: rgb(51, 51, 51); font-family: Arial, sans-serif; font-size: 18.3px;' x='139.493' y='216.765'>PassID: ";
-    // string memory tokenId = string(abi.encodePacked(_tokenIds.current()));
     string memory tokenId = Strings.toString(_tokenIds.current());
     string memory endTag = "</text>";
 
