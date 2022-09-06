@@ -13,7 +13,7 @@ contract PassNFT is ERC721URIStorage {
 
   Counters.Counter private _tokenIds;
 
-  string constant REALITY = "Gold";
+  string constant RARITY = "Gold";
   
   constructor() ERC721 ("TestPassNFT", "PASSNFT") {
     console.log("This is my Pass NFT contract.");
@@ -27,8 +27,8 @@ contract PassNFT is ERC721URIStorage {
     return string(abi.encodePacked(startTag, tokenId, endTag));
   }
 
-  function createReality(string memory rank) internal pure returns(string memory) {
-    string memory startTag = "<text style='white-space: pre; fill: rgb(51, 51, 51); font-family: Arial, sans-serif; font-size: 18.3px;' x='140.972' y='244.607'>Reality: ";
+  function createRarity(string memory rank) internal pure returns(string memory) {
+    string memory startTag = "<text style='white-space: pre; fill: rgb(51, 51, 51); font-family: Arial, sans-serif; font-size: 18.3px;' x='140.972' y='244.607'>Rarity: ";
     string memory endTag = "</text>";
 
     return string(abi.encodePacked(startTag, rank, endTag));
@@ -47,7 +47,7 @@ contract PassNFT is ERC721URIStorage {
     string memory startTag = "<svg viewBox='92.418 107.735 249.85 249.85' xmlns='http://www.w3.org/2000/svg'><rect x='92.418' y='107.735' width='249.85' height='249.85' style='fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);'/><text style='white-space: pre; fill: rgb(51, 51, 51); font-family: Arial, sans-serif; font-size: 18.3px;' x='171.481' y='139.052'>NFT Pass</text>";
     string memory endTag = "</svg>";
     string memory passId = createPassIdSVG();
-    string memory rank = createReality(REALITY);
+    string memory rank = createRarity(RARITY);
     string memory _address = createAddressSVG();
 
     return string(abi.encodePacked(startTag, passId, rank, _address, endTag));
