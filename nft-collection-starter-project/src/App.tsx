@@ -13,6 +13,8 @@ const RenderNotConnectedContainer = () => (
 );
 
 const App = () => {
+  const { ethereum } = window;
+
   return (
     <div className="App">
       <div className="container">
