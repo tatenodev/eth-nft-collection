@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
+import { ethers } from "ethers";
+import passNftAbi from "./abi/passNft.json";
 
 // Constantsを宣言する: constとは値書き換えを禁止した変数を宣言する方法です。
 const TWITTER_HANDLE = "tatenodev";
@@ -10,14 +12,21 @@ const TOTAL_MINT_COUNT = 50;
 type RenderNotConnectedContainerProps = {
   account: string;
   connectWallet: React.MouseEventHandler<HTMLButtonElement>;
+  askContractToMintNFT: React.MouseEventHandler<HTMLButtonElement>;
 };
 
 const RenderNotConnectedContainer = ({
   account,
   connectWallet,
+  askContractToMintNFT,
 }: RenderNotConnectedContainerProps) => {
   return account ? (
-    <button className="cta-button connect-wallet-button">Mint NFT</button>
+    <button
+      onClick={askContractToMintNFT}
+      className="cta-button connect-wallet-button"
+    >
+      Mint NFT
+    </button>
   ) : (
     <button
       onClick={connectWallet}
@@ -51,9 +60,33 @@ const App = () => {
     }
   };
 
+  const askContractToMintNFT = async () => {
+    const CONTRACT_ADDRESS = "0x90363b071787739bd5De6e02886D9e2800Ebad47";
+
+    try {
+      if (!ethereum) return;
+      const provider = new ethers.providers.Web3Provider(ethereum);
+      const signer = provider.getSigner();
+      const connectedContract = new ethers.Contract(
+        CONTRACT_ADDRESS,
+        passNftAbi.abi,
+        signer
+      );
+      console.log("Going to pop wallet now to pay gas...");
+      let nftTxn = await connectedContract.makeAnEpicNFT();
+      console.log("Mining...please wait.");
+      nftTxn.wait();
+      console.log(
+        `Mined, see transaction: https://goerli.etherscan.io/tx/${nftTxn.hash}`
+      );
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   useEffect(() => {
     checkIfWalletIsConnected();
-  }, []);
+  }, [checkIfWalletIsConnected]);
 
   return (
     <div className="App">
@@ -64,6 +97,7 @@ const App = () => {
           <RenderNotConnectedContainer
             account={currentAccount}
             connectWallet={connectWallet}
+            askContractToMintNFT={askContractToMintNFT}
           />
         </div>
         <div className="footer-container">
