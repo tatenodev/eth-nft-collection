@@ -1,5 +1,6 @@
 /// <reference types="react-scripts" />
 
+// https://stackoverflow.com/questions/65504958/web3-js-extending-the-window-interface-type-definitions
 interface Window {
-  ethereum: "@metamask/providers";
+  ethereum: any;
 }
