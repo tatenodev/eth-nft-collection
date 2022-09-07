@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import "./App.css";
 import { ethers } from "ethers";
 import passNftAbi from "./abi/passNft.json";
@@ -6,8 +6,8 @@ import passNftAbi from "./abi/passNft.json";
 // Constantsを宣言する: constとは値書き換えを禁止した変数を宣言する方法です。
 const TWITTER_HANDLE = "tatenodev";
 const TWITTER_LINK = `https://twitter.com/${TWITTER_HANDLE}`;
-const OPENSEA_LINK = "";
-const TOTAL_MINT_COUNT = 50;
+// const OPENSEA_LINK = "";
+// const TOTAL_MINT_COUNT = 50;
 
 type RenderNotConnectedContainerProps = {
   account: string;
@@ -41,12 +41,12 @@ const App = () => {
   const { ethereum } = window;
   const [currentAccount, setCurrentAccount] = useState("");
 
-  const checkIfWalletIsConnected = async () => {
+  const checkIfWalletIsConnected = useCallback(async () => {
     const accounts = await ethereum.request({ method: "eth_accounts" });
     if (accounts.length === 0) return;
     const account = accounts[0];
     setCurrentAccount(account);
-  };
+  }, [ethereum]);
 
   const connectWallet = async () => {
     try {
