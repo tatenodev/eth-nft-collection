@@ -1,11 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 import "hardhat/console.sol";
+import "./lib/Base64.sol";
 
-contract MyEpicGame {
+contract MyEpicGame is ERC721 {
 
-  struct CharacterAttribute {
+  struct CharacterAttributes {
     uint characterIndex;
     uint hp;
     uint maxHp;
@@ -14,18 +18,27 @@ contract MyEpicGame {
     string imageURI;
   }
 
-  CharacterAttribute[] defaultCharacters;
+  using Counters for Counters.Counter;
+  Counters.Counter private _tokenIds;
   
-  constructor(
+  CharacterAttributes[] defaultCharacters;
+
+  // NFT(tokenId) と CharacterAttributes を紐付ける
+  mapping (uint256 => CharacterAttributes) public nftHolderAttributes;
+  // ユーザー(address) と NFT(tokenId) を紐付ける
+  mapping (address => uint256) public nftHolders;
+  
+  constructor (
     // キャラをmintする際の初期化データ(contract作成時に引数で渡す)
     string[] memory characterNames,
     string[] memory characterImageURIs,
     uint[] memory characterHp,
     uint[] memory characterAttackDmg
-  ) {
+  ) ERC721("OnePiece", "ONEPIECE") {
+
     // ゲームで扱う全てのキャラをループで呼び、それぞれに付与されるデフォルト値をコントラクトに保存
     for(uint i = 0; i < characterNames.length; i += 1) {
-      defaultCharacters.push(CharacterAttribute({
+      defaultCharacters.push(CharacterAttributes({
         characterIndex: i,
         name: characterNames[i],
         imageURI: characterImageURIs[i],
@@ -33,11 +46,57 @@ contract MyEpicGame {
         maxHp: characterHp[i],
         attackDamage: characterAttackDmg[i]
       }));
-      CharacterAttribute memory character = defaultCharacters[i];
+      CharacterAttributes memory character = defaultCharacters[i];
 
-      // hardhat の console.log() は任意の順で最大4つのパラメータを指定可能
+      // hardhat の console.log() は任意の順で最大4つのパラメータが指定可能
       // 指定できるパラメータ: uint, string, bool, address
       console.log("Done initializing %s w/ HP %s, img %s", character.name, character.hp, character.imageURI);
     }
+
+    _tokenIds.increment();
+  }
+
+  function mintCharacterNFT(uint _characterIndex) external {
+    uint256 newItemId = _tokenIds.current();
+
+    _safeMint(msg.sender, newItemId);
+
+    nftHolderAttributes[newItemId] = CharacterAttributes({
+      characterIndex: _characterIndex,
+      name: defaultCharacters[_characterIndex].name,
+      imageURI: defaultCharacters[_characterIndex].imageURI,
+      hp: defaultCharacters[_characterIndex].hp,
+      maxHp: defaultCharacters[_characterIndex].maxHp,
+      attackDamage: defaultCharacters[_characterIndex].attackDamage
+    });
+
+    console.log("Minted NFT w/ tokenId %s and characterIndex %s", newItemId, _characterIndex);
+
+    nftHolders[msg.sender] = newItemId;
+
+    _tokenIds.increment();
+  }
+
+  function tokenURI(uint256 _tokenId) public view override returns (string memory) {
+    CharacterAttributes memory charAttributes = nftHolderAttributes[_tokenId];
+    string memory strHp = Strings.toString(charAttributes.hp);
+    string memory strMaxHp = Strings.toString(charAttributes.maxHp);
+    string memory strAttackDamage = Strings.toString(charAttributes.attackDamage);
+
+    string memory json = Base64.encode(
+      abi.encodePacked(
+        '{"name": "',
+        charAttributes.name,
+        ' --- NFT #: ',
+        Strings.toString(_tokenId),
+        '", "description": "This is an NFT that lets people play in the game Metavers Slayer!", "image": "',
+        charAttributes.imageURI,
+        '", "attributes": [ { "trait_type": "Health Points", "value": ',strHp,', "max_value":',strMaxHp,'}, { "trait_type": "Attack Damage", "value": ',
+        strAttackDamage,'} ]}'
+      )
+    );
+
+    string memory output = string(abi.encodePacked("data:application/json;base64,", json));
+    return output;
   }
 }
