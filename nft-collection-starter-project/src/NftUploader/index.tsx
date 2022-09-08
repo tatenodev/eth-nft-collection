@@ -1,23 +1,13 @@
 import { Button } from "@mui/material";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import ImageLogo from "./image.svg";
 import "./NftUploader.css";
 
-const ConnectButton = () => {
-  const connectWallet = () => {};
-
-  return (
-    <button
-      onClick={connectWallet}
-      className="cta-button connect-wallet-button"
-    >
-      Connect to Wallet
-    </button>
-  );
-};
-
 const NftUploader = () => {
-  const checkIfWalletIsConnected = () => {
+  const [currentAccount, setCurrentAccount] = useState("");
+  console.log("currentAccount: ", currentAccount);
+
+  const checkIfWalletIsConnected = async () => {
     const { ethereum } = window;
     if (!ethereum) {
       console.log("Make sure you have MetaMask!");
@@ -25,7 +15,43 @@ const NftUploader = () => {
     } else {
       console.log("We have the ethereum object", ethereum);
     }
+
+    const accounts = await ethereum.request({ method: "eth_accounts" });
+
+    if (accounts.length !== 0) {
+      const account = accounts[0];
+      console.log("Found an authorized account:", account);
+      setCurrentAccount(account);
+    } else {
+      console.log("No authorized account found");
+    }
   };
+
+  const connectWallet = async () => {
+    try {
+      const { ethereum } = window;
+      if (!ethereum) {
+        alert("Get MetaMask!");
+        return;
+      }
+      const accounts = await ethereum.request({
+        method: "eth_requestAccounts",
+      });
+      console.log("Connected", accounts[0]);
+      setCurrentAccount(accounts[0]);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const renderNotConnectedContainer = () => (
+    <button
+      onClick={connectWallet}
+      className="cta-button connect-wallet-button"
+    >
+      Connect to Wallet
+    </button>
+  );
 
   useEffect(() => {
     checkIfWalletIsConnected();
@@ -33,7 +59,11 @@ const NftUploader = () => {
 
   return (
     <div className="outerBox">
-      <ConnectButton />
+      {currentAccount === "" ? (
+        renderNotConnectedContainer()
+      ) : (
+        <p>If you choose image, you can mint your NFT</p>
+      )}
       <div className="title">
         <h2>NFTアップローダー</h2>
       </div>
