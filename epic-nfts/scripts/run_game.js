@@ -1,9 +1,18 @@
 const main = async() => {
   const gameContractFactory = await hre.ethers.getContractFactory("MyEpicGame");
-  const gameContract = await gameContractFactory.deploy();
-  const nftGame = await gameContract.deployed();
+  const gameContract = await gameContractFactory.deploy(
+    ["ZORO", "NAMI", "USOPP"], //character name
+    [
+      "https://i.imgur.com/TZEhCTX.png", // character image
+      "https://i.imgur.com/WVAaMPA.png",
+      "https://i.imgur.com/pCMZeiM.png",
+    ],
+    [100, 200, 300], // hp
+    [100, 50, 25] // atk
+  );
 
-  console.log("Contract deployed to:" , nftGame.address);
+  await gameContract.deployed();
+  console.log("Contract deployed to:" , gameContract.address);
 }
 
 const runMain = async () => {
