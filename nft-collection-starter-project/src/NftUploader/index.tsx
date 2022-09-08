@@ -3,11 +3,21 @@ import { useEffect } from "react";
 import ImageLogo from "./image.svg";
 import "./NftUploader.css";
 
+const ConnectButton = () => {
+  const connectWallet = () => {};
+
+  return (
+    <button
+      onClick={connectWallet}
+      className="cta-button connect-wallet-button"
+    >
+      Connect to Wallet
+    </button>
+  );
+};
+
 const NftUploader = () => {
   const checkIfWalletIsConnected = () => {
-    /*
-     * ユーザーがMetaMaskを持っているか確認します。
-     */
     const { ethereum } = window;
     if (!ethereum) {
       console.log("Make sure you have MetaMask!");
@@ -16,25 +26,14 @@ const NftUploader = () => {
       console.log("We have the ethereum object", ethereum);
     }
   };
-  const connectWallet = () => {};
 
-  const renderNotConnectedContainer = () => (
-    <button
-      onClick={connectWallet}
-      className="cta-button connect-wallet-button"
-    >
-      Connect to Wallet
-    </button>
-  );
-  /*
-   * ページがロードされたときに useEffect()内の関数が呼び出されます。
-   */
   useEffect(() => {
     checkIfWalletIsConnected();
   }, []);
+
   return (
     <div className="outerBox">
-      {renderNotConnectedContainer()}
+      <ConnectButton />
       <div className="title">
         <h2>NFTアップローダー</h2>
       </div>
