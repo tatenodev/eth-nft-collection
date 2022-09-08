@@ -3,7 +3,6 @@ import "./App.css";
 import { ethers } from "ethers";
 import passNftAbi from "./abi/passNft.json";
 
-// Constantsを宣言する: constとは値書き換えを禁止した変数を宣言する方法です。
 const TWITTER_HANDLE = "tatenodev";
 const TWITTER_LINK = `https://twitter.com/${TWITTER_HANDLE}`;
 // const OPENSEA_LINK = "";
