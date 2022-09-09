@@ -18,6 +18,15 @@ contract MyEpicGame is ERC721 {
     string imageURI;
   }
 
+  struct BigBoss {
+    string name;
+    string imageURI;
+    uint hp;
+    uint maxHp;
+    uint attackDamage;
+  }
+  BigBoss public bigBoss;
+
   using Counters for Counters.Counter;
   Counters.Counter private _tokenIds;
   
@@ -33,8 +42,21 @@ contract MyEpicGame is ERC721 {
     string[] memory characterNames,
     string[] memory characterImageURIs,
     uint[] memory characterHp,
-    uint[] memory characterAttackDmg
+    uint[] memory characterAttackDmg,
+    // boss
+    string memory bossName,
+    string memory bossImageURI,
+    uint bossHp,
+    uint bossAttackDamage
   ) ERC721("OnePiece", "ONEPIECE") {
+    bigBoss = BigBoss({
+      name: bossName,
+      imageURI: bossImageURI,
+      hp: bossHp,
+      maxHp: bossHp,
+      attackDamage: bossAttackDamage
+    });
+    console.log("Done initializing boss %s w/ HP %s, img %s", bigBoss.name, bigBoss.hp, bigBoss.imageURI);
 
     // ゲームで扱う全てのキャラをループで呼び、それぞれに付与されるデフォルト値をコントラクトに保存
     for(uint i = 0; i < characterNames.length; i += 1) {
@@ -75,6 +97,31 @@ contract MyEpicGame is ERC721 {
     nftHolders[msg.sender] = newItemId;
 
     _tokenIds.increment();
+  }
+
+  function attackBoss() public {
+    uint256 nftTokenIdOfPlaoyer = nftHolders[msg.sender];
+    CharacterAttributes storage player = nftHolderAttributes[nftTokenIdOfPlaoyer];
+    console.log("\nPlayer w/ character %s about to attack. Has %s HP and %s AD", player.name, player.hp, player.attackDamage);
+	  console.log("Boss %s has %s HP and %s AD", bigBoss.name, bigBoss.hp, bigBoss.attackDamage);
+
+    require(player.hp > 0, "Error: character must have HP to attack boss.");
+    require(bigBoss.hp > 0, "Error: boss must have HP to attack characters.");
+
+    if (bigBoss.hp < player.attackDamage) {
+      bigBoss.hp = 0;
+    } else {
+      bigBoss.hp = bigBoss.hp - player.attackDamage;
+    }
+
+    if (player.hp < bigBoss.attackDamage) {
+      player.hp = 0;
+    } else {
+      player.hp = player.hp - bigBoss.attackDamage;
+    }
+
+    console.log("Player attacked boss. New boss hp: %s", bigBoss.hp);
+	  console.log("Boss attacked player. New player hp: %s\n", player.hp);
   }
 
   function tokenURI(uint256 _tokenId) public view override returns (string memory) {

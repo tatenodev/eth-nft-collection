@@ -8,17 +8,27 @@ const main = async() => {
       "https://i.imgur.com/pCMZeiM.png",
     ],
     [100, 200, 300], // hp
-    [100, 50, 25] // atk
+    [100, 50, 25], // atk
+    // Boss
+    "CROCODILE",
+    "https://i.imgur.com/BehawOh.png",
+    10000,
+    50,
   );
 
   await gameContract.deployed();
   console.log("Contract deployed to:" , gameContract.address);
 
-  console.log("==============================")
-
   let txn;
   txn = await gameContract.mintCharacterNFT(2);
   await txn.wait();
+
+  txn = await gameContract.attackBoss();
+  await txn.wait();
+
+  txn = await gameContract.attackBoss();
+  await txn.wait();
+  
   let returnedTokenUri = await gameContract.tokenURI(1);
   console.log("Token URI:", returnedTokenUri);
 }
