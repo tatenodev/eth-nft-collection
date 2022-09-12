@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import SelectCharacter from "./components/SelectCharacter";
+import { CONTRACT_ADDRESS } from "./constants";
+import myEpicGame from "./abi/MyEpicGame.json";
 
 const TWITTER_HANDLE = "tatenodev";
 const TWITTER_LINK = `https://twitter.com/${TWITTER_HANDLE}`;
