@@ -24,7 +24,7 @@ const RenderContent = ({
     React.SetStateAction<CharacterDataProps | null>
   >;
   connectWalletAction: () => Promise<void>;
-}): JSX.Element | null => {
+}) => {
   if (!currentAccount) {
     return (
       <div className="connect-wallet-container">
@@ -42,7 +42,7 @@ const RenderContent = ({
     return <SelectCharacter setCharacterNFT={setCharacterNFT} />;
   }
 
-  return null;
+  return <SelectCharacter setCharacterNFT={setCharacterNFT} />;
 };
 
 const App = () => {
