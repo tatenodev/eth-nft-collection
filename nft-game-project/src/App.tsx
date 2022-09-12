@@ -8,6 +8,7 @@ import {
   transformCharacterData,
 } from "./constants";
 import myEpicGame from "./abi/MyEpicGame.json";
+import Arena from "./components/Arena";
 
 const TWITTER_HANDLE = "tatenodev";
 const TWITTER_LINK = `https://twitter.com/${TWITTER_HANDLE}`;
@@ -41,8 +42,13 @@ const RenderContent = ({
   if (currentAccount && !characterNFT) {
     return <SelectCharacter setCharacterNFT={setCharacterNFT} />;
   }
+  if (currentAccount && characterNFT) {
+    return (
+      <Arena characterNFT={characterNFT} setCharacterNFT={setCharacterNFT} />
+    );
+  }
 
-  return <SelectCharacter setCharacterNFT={setCharacterNFT} />;
+  return <></>;
 };
 
 const App = () => {
