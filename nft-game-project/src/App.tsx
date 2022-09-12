@@ -1,26 +1,35 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
 
-function App() {
+const TWITTER_HANDLE = "tatenodev";
+const TWITTER_LINK = `https://twitter.com/${TWITTER_HANDLE}`;
+
+const App = () => {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div className="container">
+        <div className="header-container">
+          <p className="header gradient-text">⚡️ METAVERSE GAME ⚡️</p>
+          <p className="sub-text">プレイヤーと協力してボスを倒そう✨</p>
+          <div className="connect-wallet-container">
+            <img src="https://i.imgur.com/TXBQ4cC.png" alt="LUFFY" />
+          </div>
+        </div>
+        <div className="footer-container">
+          <img
+            alt="Twitter Logo"
+            className="twitter-logo"
+            src="/twitter-logo.svg"
+          />
+          <a
+            className="footer-text"
+            href={TWITTER_LINK}
+            target="_blank"
+            rel="noreferrer"
+          >{`built with @${TWITTER_HANDLE}`}</a>
+        </div>
+      </div>
     </div>
   );
-}
+};
 
 export default App;
