@@ -8,35 +8,35 @@ const main = async () => {
       "https://i.imgur.com/pCMZeiM.png",
     ],
     [100, 200, 300],
-    [100, 50, 25]
-  )
-  await gameContract.deployed();
+    [100, 50, 25],
+    "CROCODILE",
+    "https://i.imgur.com/BehawOh.png",
+    10000,
+    50
+  );
+  const nftGame = await gameContract.deployed();
 
-  console.log("Contract deployed to: ", gameContract.address);
-
-  let txn = await gameContract.mintCharacterNFT(0);
-  await txn.wait();
-  console.log("Minted NFT #1");
-
-  txn = await gameContract.mintCharacterNFT(1);
-  await txn.wait();
-  console.log("Minted NFT #2");
-
+  console.log("Contract deployed to:", nftGame.address);
+  let txn;
   txn = await gameContract.mintCharacterNFT(2);
+
   await txn.wait();
-  console.log("Minted NFT #3");
+  txn = await gameContract.attackBoss();
+  await txn.wait();
+  console.log("First attack.");
+  txn = await gameContract.attackBoss();
+  await txn.wait();
+  console.log("Second attack.");
 
-  console.log("Done deploying and minting!");
-}
-
+  console.log("Done!");
+};
 const runMain = async () => {
   try {
     await main();
     process.exit(0);
-  } catch (err) {
-    console.log(err);
+  } catch (error) {
+    console.log(error);
     process.exit(1);
   }
-}
-
+};
 runMain();
