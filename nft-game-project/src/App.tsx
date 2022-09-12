@@ -1,11 +1,44 @@
 import { useEffect, useState } from "react";
 import "./App.css";
+import SelectCharacter from "./components/SelectCharacter";
 
 const TWITTER_HANDLE = "tatenodev";
 const TWITTER_LINK = `https://twitter.com/${TWITTER_HANDLE}`;
 
+const RenderContent = ({
+  currentAccount,
+  characterNFT,
+  setCharacterNFT,
+  connectWalletAction,
+}: {
+  currentAccount: string | null;
+  characterNFT: string | null;
+  setCharacterNFT: React.Dispatch<React.SetStateAction<string | null>>;
+  connectWalletAction: () => Promise<void>;
+}): JSX.Element | null => {
+  if (!currentAccount) {
+    return (
+      <div className="connect-wallet-container">
+        <img src="https://i.imgur.com/TXBQ4cC.png" alt="LUFFY" />
+        <button
+          className="cta-button connect-wallet-button"
+          onClick={connectWalletAction}
+        >
+          Connect Wallet to Get Started
+        </button>
+      </div>
+    );
+  }
+  if (currentAccount && !characterNFT) {
+    return <SelectCharacter setCharacterNFT={setCharacterNFT} />;
+  }
+
+  return null;
+};
+
 const App = () => {
   const [currentAccount, setCurrentAccount] = useState<string | null>(null);
+  const [characterNFT, setCharacterNFT] = useState<string | null>(null);
 
   const checkIfWalletIsConnected = async () => {
     try {
@@ -49,16 +82,12 @@ const App = () => {
         <div className="header-container">
           <p className="header gradient-text">⚡️ METAVERSE GAME ⚡️</p>
           <p className="sub-text">プレイヤーと協力してボスを倒そう✨</p>
-          <div className="connect-wallet-container">
-            <img src="https://i.imgur.com/TXBQ4cC.png" alt="LUFFY" />
-            <button
-              type="button"
-              className="cta-button connect-wallet-button"
-              onClick={connectWalletAction}
-            >
-              Connect Wallet To Get Started
-            </button>
-          </div>
+          <RenderContent
+            currentAccount={currentAccount}
+            characterNFT={characterNFT}
+            setCharacterNFT={setCharacterNFT}
+            connectWalletAction={connectWalletAction}
+          />
         </div>
         <div className="footer-container">
           <img
